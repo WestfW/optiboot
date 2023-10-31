@@ -300,6 +300,7 @@ COMMON_OPTIONS += $(SOFT_UART_CMD) $(LED_DATA_FLASH_CMD) $(LED_CMD) $(SS_CMD)
 COMMON_OPTIONS += $(SUPPORT_EEPROM_CMD) $(LED_START_ON_CMD) $(APPSPM_CMD)
 COMMON_OPTIONS += $(OSCCAL_VALUE_CMD) $(VERSION_CMD) $(TIMEOUT_CMD)
 COMMON_OPTIONS += $(POR_CMD) $(EXTR_CMD) $(RS485_CMD)
+COMMON_OPTIONS += $(EXTRA_CFLAGS)
 
 #UART is handled separately and only passed for devices with more than one.
 HELPTEXT += "Option UART=n                - use UARTn for communications\n"

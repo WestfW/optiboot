@@ -895,6 +895,11 @@ int main(void) {
   #endif
 #endif
 
+#ifdef HOLD_TO_PROG
+  if (HOLD_TO_PROG_ON)
+    watchdogConfig(WATCHDOG_OFF);
+  else
+#endif
   // Set up watchdog to trigger after desired timeout
   watchdogConfig(WDTPERIOD);
 

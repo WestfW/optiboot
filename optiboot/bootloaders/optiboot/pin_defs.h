@@ -1628,3 +1628,26 @@
 #if SOFT_UART && defined(SOFTTX) && defined(SOFTRX)
 #include "pins_softuart.h"
 #endif
+
+#ifdef HOLD_TO_PROG
+
+#if HOLD_TO_PROG == D0
+#undef HOLD_TO_PROG
+#define HOLD_TO_PROG_PIN     PIND
+#define HOLD_TO_PROG	    PIND0
+
+#else
+#error -------------------------------------------
+#error Unrecognized LED name.  Should be like "B5"
+#error -------------------------------------------
+#endif
+
+#endif
+
+#ifdef BUTTON_ON_HIGH
+// A pin is 1 when the button is down
+#define HOLD_TO_PROG_ON ((HOLD_TO_PROG_PIN & HOLD_TO_PROG) == 1)
+#else
+// A pin is 0 when the button is down
+#define HOLD_TO_PROG_ON ((HOLD_TO_PROG_PIN & HOLD_TO_PROG) == 0)
+#endif

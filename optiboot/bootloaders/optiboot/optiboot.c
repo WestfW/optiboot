@@ -181,6 +181,9 @@
 #  define NO_START_APP_ON_POR 0
 #endif
 
+#if !defined(APP_BBSPM)
+#define APP_BBSPM 0
+#endif
 
 /* UART options */
 #if !defined(SOFT_UART)
@@ -699,6 +702,11 @@ void pre_main(void) {
     "  ret\n"   // if do_spm isn't include, return without doing anything
 #else
     "  rjmp    do_spm\n"
+#endif
+#if APP_BBSPM
+    "  rjmp    bb_spm\n"
+#else
+    "  ret\n"   // if do_spm isn't include, return without doing anything
 #endif
     "1:\n"
     );
@@ -1267,12 +1275,7 @@ static void inline toggle_led(void) {
   defined(__AVR_ATmega64__)   || defined(__AVR_ATmega128__)
   LED_PORT ^= _BV(LED);
 #else
-  // Newer AVRs can toggle by writing PINx.
-  if (&LED_PIN <= &_SFR_IO8(0x31)) {  // "if" code optimizes away.
-    LED_PIN |= _BV(LED); // becomes SBI on low ports (in theory: incorrectly)
-  } else {
-    LED_PIN = _BV(LED);  // high ports can't be sbi'ed (Issue #346)
-  }
+  LED_PIN |= _BV(LED);  // Newer AVRs can toggle by writing PINx
 #endif
 }
 
@@ -1605,7 +1608,35 @@ static void do_spm(uint16_t address, uint8_t command, uint16_t data) {
 }
 #endif
 
+#if APP_BBSPM
 
+/*
+    bare bone do_spm:
+    
+    r24 command and scratch, r25 SREG hold
+    r0:r1   defined by caller
+    r30:r31 defined by caller
+
+    SPMCR == 0x37
+    SPMEN == 0x00
+
+    only does spm and wait until ends. only.
+ */
+
+void bb_spm (void) {
+  asm volatile (
+    "       in r25, __SREG__\n"
+    "       cli\n"
+    "       sts 0x37, r24\n"
+    "       spm\n"
+    "10:\n"     
+    "       lds r24, 0x37\n"
+    "       sbrc r24, 0x00\n"
+    "       rjmp 10b\n"
+    "       out __SREG__, r25\n"
+    );
+}
+#endif
 
 #if BIGBOOT
 /*
@@ -1679,3 +1710,4 @@ OPT2FLASH(OPTIBOOT_CUSTOMVER);
 OPTFLASHSECT const char f_version[] = "Version=" xstr(OPTIBOOT_MAJVER) "." xstr(OPTIBOOT_MINVER);
 
 #endif
+

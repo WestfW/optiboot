@@ -259,6 +259,13 @@ APPSPM_CMD = -DAPP_NOSPM=1
 endif
 endif
 
+HELPTEXT += "Option APP_BBSPM=1          - allow call of bare bone spm\n"
+ifdef APP_BBSPM
+ifneq ($(APP_BBSPM),0)
+BBSPM_CMD = -DAPP_BBSPM=1
+endif
+endif
+
 HELPTEXT += "Option OSCCAL_VALUE=nnn      - set set OSCCAL_VALUE in bootloader\n"
 ifdef OSCCAL_VALUE
 OSCCAL_VALUE_CMD = -DOSCCAL_VALUE=$(OSCCAL_VALUE)
@@ -305,7 +312,7 @@ endif
 
 COMMON_OPTIONS = $(BAUD_RATE_CMD) $(LED_START_FLASHES_CMD) $(BIGBOOT_CMD)
 COMMON_OPTIONS += $(SOFT_UART_CMD) $(LED_DATA_FLASH_CMD) $(LED_CMD) $(SS_CMD)
-COMMON_OPTIONS += $(SUPPORT_EEPROM_CMD) $(LED_START_ON_CMD) $(APPSPM_CMD)
+COMMON_OPTIONS += $(SUPPORT_EEPROM_CMD) $(LED_START_ON_CMD) $(APPSPM_CMD) $(BBSPM_CMD)
 COMMON_OPTIONS += $(OSCCAL_VALUE_CMD) $(VERSION_CMD) $(TIMEOUT_CMD)
 COMMON_OPTIONS += $(POR_CMD) $(EXTR_CMD) $(RS485_CMD) $(NODATE_CMD)
 
@@ -726,6 +733,3 @@ clean_asm:
 
 help:
 	@echo -e $(HELPTEXT)
-
-.DEFAULT:
-	@echo No target named \"$<\":  Maybe you need \"-f Makefile.mega0\"?
